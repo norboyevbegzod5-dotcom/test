@@ -3,13 +3,14 @@ import { getProject, updateProject, deleteProject } from '@/lib/database'
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params
     const searchParams = request.nextUrl.searchParams
     const userId = searchParams.get('userId')
 
-    const project = await getProject(params.id, userId || undefined)
+    const project = await getProject(id, userId || undefined)
     if (!project) {
       return NextResponse.json(
         { success: false, error: 'Project not found' },
@@ -29,9 +30,10 @@ export async function GET(
 
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params
     const body = await request.json()
     const { userId, name, cabinetData, cuttingPlan, hardware, cost } = body
 
@@ -42,7 +44,7 @@ export async function PUT(
       )
     }
 
-    await updateProject(params.id, userId, name, cabinetData, cuttingPlan, hardware, cost)
+    await updateProject(id, userId, name, cabinetData, cuttingPlan, hardware, cost)
     return NextResponse.json({ success: true })
   } catch (error) {
     console.error('Update project error:', error)
@@ -55,9 +57,10 @@ export async function PUT(
 
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params
     const searchParams = request.nextUrl.searchParams
     const userId = searchParams.get('userId')
 
@@ -68,7 +71,7 @@ export async function DELETE(
       )
     }
 
-    await deleteProject(params.id, userId)
+    await deleteProject(id, userId)
     return NextResponse.json({ success: true })
   } catch (error) {
     console.error('Delete project error:', error)

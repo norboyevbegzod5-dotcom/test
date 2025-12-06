@@ -8,9 +8,8 @@ import {
   Hardware,
   HardwareType,
   Panel,
-  calculateEdgeBand,
 } from './types';
-import { calculatePanels } from './geometryEngine';
+import { calculatePanels, calculateEdgeBand } from './geometryEngine';
 
 // Hardware pricing (in rubles, can be configured)
 const HARDWARE_PRICES: Record<HardwareType, number> = {

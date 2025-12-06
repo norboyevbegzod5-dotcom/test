@@ -1,12 +1,22 @@
 import { NextRequest, NextResponse } from 'next/server'
 import OpenAI from 'openai'
 
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-})
-
 export async function POST(request: NextRequest) {
   try {
+    const apiKey = process.env.OPENAI_API_KEY
+    
+    if (!apiKey) {
+      return NextResponse.json({
+        success: false,
+        error: 'OpenAI API key not configured',
+        imageUrl: null,
+      })
+    }
+
+    const openai = new OpenAI({
+      apiKey,
+    })
+
     const body = await request.json()
     const { cabinet, dimensions, material } = body
 
@@ -26,9 +36,11 @@ export async function POST(request: NextRequest) {
       quality: 'standard',
     })
 
+    const imageUrl = response.data?.[0]?.url || null
+
     return NextResponse.json({
       success: true,
-      imageUrl: response.data[0].url,
+      imageUrl,
     })
   } catch (error) {
     console.error('Render generation error:', error)
